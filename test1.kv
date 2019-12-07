@@ -1,0 +1,952 @@
+#: import MDToolbar kivymd.toolbar.MDToolbar
+#:import MDCheckbox kivymd.selectioncontrols.MDCheckbox
+#:import MDNavigationDrawer kivymd.navigationdrawer.MDNavigationDrawer
+#:import NavigationLayout kivymd.navigationdrawer.NavigationLayout
+#:import NavigationDrawerDivider kivymd.navigationdrawer.NavigationDrawerDivider
+#:import NavigationDrawerToolbar kivymd.navigationdrawer.NavigationDrawerToolbar
+#:import NavigationDrawerSubheader kivymd.navigationdrawer.NavigationDrawerSubheader
+#:import WipeTransition kivy.uix.screenmanager.WipeTransition
+#:import MDSeparator kivymd.cards.MDSeparator
+#:set color_shadow [0, 0, 0, .2980392156862745]
+
+
+<ImageButton>:
+    pos:self.pos
+    size:self.size
+    background_color:0,0,0,0
+    background_normal:''
+    back_color:1,1,1,1
+    border_radius:[18]
+    canvas.before:
+        Color:
+            rgba:self.back_color
+        RoundedRectangle:
+            pos:self.pos
+            size:self.size
+            radius:self.border_radius
+
+
+<ViewStock>:
+    stock_name:stock_name
+    stock_price:stock_price
+    stock_qty:stock_qty
+    stock_disc:stock_disc
+    stock_vat:stock_vat
+    stock_code:stock_code
+    controller: controller
+    GridLayout:
+        cols:1
+        padding:root.width*0.02,root.height*0.02
+        spacing:dp(10)
+        canvas.before:
+            Color:
+                rgba:1,1,1,1
+            Rectangle:
+                pos:self.pos
+                size:self.size
+        MDToolbar:
+            id: toolbar
+            title: 'ViewStock'
+            md_bg_color: get_color_from_hex('#010c47')
+            background_palette: 'Blue'
+            background_hue: '500'
+            elevation: 10
+            left_action_items:
+                [['arrow-left', lambda x: root.go_back()]]
+            right_action_items:
+                [['dots-vertical', lambda x: app.root.toggle_nav_drawer()]]
+
+        GridLayout:
+            cols:2
+            size_hint_y:.2
+            id:scroll_width
+            ScrollView:
+                id:scrolfit
+                size_hint_x:dp(.7)
+                do_scroll_y:False
+                do_scroll_x:True
+                bar_width: dp(10)
+                bar_color: 1, 0, 0, 1   # red
+                bar_inactive_color: 0, 0, 1, 1   # blue
+                effect_cls: "ScrollEffect"
+                scroll_type: ['bars']
+
+                GridLayout:
+                    cols: 6
+                    size_hint_x:None
+                    width:self.minimum_width
+                    row_force_default:True
+                    row_default_height:dp(40)
+                    spacing:dp(5)
+                    TextInput:
+                        id:stock_name
+                        hint_text:'Item'
+                        font_size:dp(25)
+                        muiltiline:False
+                        size_hint_x:None
+                        width: scrolfit.size[0]/2
+
+                    TextInput:
+                        id:stock_code
+                        hint_text:'Code'
+                        font_size:dp(25)
+                        muiltiline:False
+                        size_hint_x:None
+                        width: scrolfit.size[0]/2
+                    TextInput:
+                        id:stock_qty
+                        hint_text:'Qty'
+                        font_size:dp(25)
+                        muiltiline:False
+                        size_hint_x:None
+                        width: scrolfit.size[0]/2
+
+                    TextInput:
+                        id:stock_price
+                        hint_text:'Price'
+                        font_size:dp(25)
+                        muiltiline:False
+                        size_hint_x:None
+                        width: scrolfit.size[0]/2
+
+                    TextInput:
+                        id:stock_vat
+                        hint_text:'VAT'
+                        font_size:dp(25)
+                        muiltiline:False
+                        size_hint_x:None
+                        width: scrolfit.size[0]/2
+
+                    TextInput:
+                        id:stock_disc
+                        hint_text:'Disc'
+                        font_size:dp(25)
+                        muiltiline:False
+                        size_hint_x:None
+                        width: scrolfit.size[0]/2
+
+
+            GridLayout:
+                cols:1
+                size_hint_x:dp(.3)
+                row_force_default:True
+                row_default_height:dp(40)
+                Button:
+                    text:"Edit"
+                    on_press:root.validate_edit()
+
+        BoxLayout:
+            BoxLayout:
+                BoxLayout:
+                    BoxLayout:
+                        BoxLayout:
+                            orientation:'vertical'
+                            GridLayout:
+                                size_hint: 1, None
+                                row_force_default: True
+                                spacing: 3
+                                row_default_height: 40
+                                height: 25
+                                cols: 4
+
+                                Button:
+                                    text: "Item"
+                                    background_normal:""
+                                    background_color: rgba('#010c47')
+                                    background_down:'dark.png'
+
+
+                                Button:
+                                    text: "Code"
+                                    background_normal:""
+                                    background_color: rgba('#010c47')
+                                    background_down:'dark.png'
+
+                                Button:
+                                    text: "Qty"
+                                    background_normal:""
+                                    background_color: rgba('#010c47')
+                                    background_down:'dark.png'
+
+                                Button:
+                                    text: "Price"
+                                    background_normal:""
+                                    background_color: rgba('#010c47')
+                                    background_down:'dark.png'
+
+                            Label:
+                                text:''
+                                size_hint_y: None
+                                height:10
+                            BoxLayout:
+                                orientation:'vertical'
+                                RecycleView:
+                                    id: controller
+                                    viewclass: 'SelectableButton1'
+                                    data: root.data_items
+                                    SelectableRecycleGridLayout:
+                                        cols: 4
+                                        default_size: None, dp(26)
+                                        default_size_hint: 1, None
+                                        size_hint_y: None
+                                        height: self.minimum_height
+                                        orientation: 'vertical'
+                                        multiselect: True
+                                        touch_multiselect: True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<AddStock>:
+
+
+    stock_code:stock_code
+    stock_price:stock_price
+    stock_qty:stock_qty
+    stock_disc :stock_disc
+    stock_vat:stock_vat
+    stock_name:stock_name
+
+
+    BoxLayout:
+
+
+###################  main pane ########################
+
+
+        GridLayout:
+            cols:1
+            canvas:
+                Color:
+                    rgba: 1,1,1,1
+                Rectangle:
+                    pos:self.pos
+                    size:self.size
+            MDToolbar:
+                id: toolbar
+                title: 'Add Stock'
+                md_bg_color: get_color_from_hex('#010c47')
+                background_palette: 'Blue'
+                background_hue: '500'
+                elevation: 10
+                left_action_items:
+                    [['arrow-left', lambda x: root.go_back()]]
+                right_action_items:
+                    [['dots-vertical', lambda x: app.root.toggle_nav_drawer()]]
+
+            GridLayout:
+                cols:2
+                padding:[dp(10),dp(20),dp(5),dp(10)]
+                size_hint_Y:None
+                height:.2
+                row_force_default:True
+                row_default_height:dp(40)
+                canvas:
+                    Color:
+                        rgba: rgba('#010c47')
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+
+
+
+                Label:
+                    text:"[b]Add Item In Stock[/b]"
+                    color:1,1,1,1
+                    #font_size:30
+                    markup:True
+
+
+
+                Button:
+                    text:"Save"
+                    halign: 'left'
+                    background_normal:""
+                    background_color:0,0,0,0
+                    back_color: (1,0,1,1)
+                    background_down:'dark.png'
+                    size_hint_x:None
+                    width:dp(100)
+                    border_radius:[18]
+                    on_press:root.validate_signup()
+                    canvas.before:
+                        Color:
+                            rgba:self.back_color
+                        RoundedRectangle:
+                            pos:self.pos
+                            size:self.size
+                            radius:self.border_radius
+
+            GridLayout:
+                cols:2
+                padding:[dp(0),dp(10),dp(20),dp(0)]
+                spacing:dp(10)
+                row_force_default:True
+                row_default_height:dp(40)
+                Label:
+                    text: "Item name"
+                    color:0,0,0,1
+
+                TextInput:
+                    id:stock_name
+                    text:''
+                    font_size:dp(25)
+
+
+                Button:
+                    text:'Gen Code'
+                    color:0,0,0,1
+                    background_color:[0,0,0,.1]
+                    background_normal:''
+                    back_color:0,0,1,1
+                    background_down:'dark.png'
+                    border_radius:[18]
+                    on_press:root.gen_patient_id()
+
+
+                TextInput:
+                    id:stock_code
+                    text:''
+                    font_size:dp(25)
+
+                Label:
+                    text: "Quantity"
+                    color:0,0,0,1
+
+                TextInput:
+                    id:stock_qty
+                    text:''
+                    font_size:dp(25)
+
+                Label:
+                    text: "Price"
+                    color:0,0,0,1
+
+                TextInput:
+                    id:stock_price
+                    text:''
+                    font_size:dp(25)
+
+                Label:
+                    text: "V.A.T"
+                    color:0,0,0,1
+
+                TextInput:
+                    id:stock_vat
+                    text:''
+                    font_size:dp(25)
+
+                Label:
+                    text: "Discount"
+                    color:0,0,0,1
+
+                TextInput:
+                    id:stock_disc
+                    text:''
+                    font_size:dp(25)
+
+            GridLayout:
+                cols:1
+                Label:
+                    text:""
+                    size_hint_y:
+
+            GridLayout:
+                cols:1
+                Label:
+                    text:""
+                    size_hint_y:
+            GridLayout:
+                cols:1
+                Label:
+                    text:""
+                    size_hint_y:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<RV>:
+    item:item
+    qty:qty
+    price:price
+    total_id:total_id
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                orientation: 'vertical'
+                padding: root.width*0.005,root.height*0.005
+                canvas:
+                    Color:
+                        rgba:1,1,1,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                MDToolbar:
+                    id: toolbar
+                    title:app.title
+                    md_bg_color: get_color_from_hex('#010c47')
+                    background_palette: 'Blue'
+                    background_hue: '500'
+                    elevation: 10
+                    left_action_items:
+                        [['menu', lambda x: app.root.toggle_nav_drawer()]]
+                    right_action_items:
+                        [['dots-vertical', lambda x: app.root.toggle_nav_drawer()]]
+
+                BoxLayout:
+                    orientation:'vertical'
+                    GridLayout:
+                        cols:1
+
+
+                        canvas:
+                            Color:
+                                rgba: 1,1,1,1
+                            Rectangle:
+                                pos:self.pos
+                                size:self.size
+
+
+
+                        GridLayout:
+                            cols:1
+
+                            GridLayout:
+                                cols:1
+                                size_hint_y: None
+                                height:150
+                                row_force_default: True
+                                row_default_height: dp(60)
+                                spacing:20
+                                canvas.before:
+
+                                    Color:
+                                        rgba: 0, 0, 0, .2
+                                    Line:
+                                        width:dp(2)
+                                        rectangle: (self.x,self.y, self.width, self.height-50)
+
+
+                                BoxLayout:
+                                    spacing:10
+                                    TextInput:
+                                        id: item
+                                        hint_text:"Item name"
+                                        multiline: False
+                                        height:dp(30)
+                                        size_hint_y:None
+
+                                    TextInput:
+                                        id: qty
+                                        hint_text:"Item Qty"
+                                        multiline: False
+                                        height:dp(30)
+                                        size_hint_y:None
+
+                                    TextInput:
+                                        id: price
+                                        hint_text:"Item price"
+                                        multiline: False
+                                        height:dp(30)
+                                        size_hint_y:None
+                                        write_tab:False
+                                        on_text_validate: root.save()
+
+                                GridLayout:
+                                    cols:4
+                                    row_force_default: True
+                                    spacing: 5
+                                    row_default_height: 45
+                                    Button:
+                                        id: save_btn
+                                        text: "Add "
+
+                                        on_press:
+                                            root.validate_entry()
+                                            root.get_users()
+                                            root.clear()
+
+
+                                    Button:
+
+                                        text: "Update"
+                                        on_press:
+                                            root.validate_update_entry()
+
+
+                                    Button:
+
+                                        text: "Delete "
+
+                                        on_press: root.delete_item()
+
+
+                                    Button:
+
+                                        text: "Clear"
+
+                                        on_press:
+                                            root.clear_list()
+                                            root.get_users()
+                                            root.clear()
+                                            #root.clear_also()
+
+
+
+
+                            GridLayout:
+                                cols:1
+                                padding:[dp(0),dp(45),dp(0), dp(0)]
+                                canvas.before:
+
+                                    Color:
+                                        rgba: 0, 0, 0, .3
+                                    Line:
+                                        width:1
+                                        rectangle: (self.x,self.y, self.width, self.height)
+
+
+                                GridLayout:
+                                    size_hint: 1, None
+                                    row_force_default: True
+                                    spacing: 3
+                                    row_default_height: 40
+                                    height: 25
+                                    cols: 4
+
+                                    Button:
+                                        text: "Item"
+                                        background_normal:""
+                                        background_color: rgba('#010c47')
+                                        background_down:'dark.png'
+
+
+                                    Button:
+                                        text: "Quantity"
+                                        background_normal:""
+                                        background_color: rgba('#010c47')
+                                        background_down:'dark.png'
+
+                                    Button:
+                                        text: "@ price"
+                                        background_normal:""
+                                        background_color: rgba('#010c47')
+                                        background_down:'dark.png'
+
+                                    Button:
+                                        text: "Total"
+                                        background_normal:""
+                                        background_color: rgba('#010c47')
+                                        background_down:'dark.png'
+
+                                Label:
+                                    text:''
+                                    size_hint_y: None
+                                    height:10
+                                BoxLayout:
+                                    orientation:'vertical'
+                                    RecycleView:
+                                        id: controller
+                                        viewclass: 'SelectableButton'
+                                        data: root.data_items
+                                        SelectableRecycleGridLayout:
+                                            cols: 4
+                                            default_size: None, dp(26)
+                                            default_size_hint: 1, None
+                                            size_hint_y: None
+                                            height: self.minimum_height
+                                            orientation: 'vertical'
+                                            multiselect: True
+                                            touch_multiselect: True
+
+
+                            GridLayout:
+                                cols:3
+                                size_hint_y:None
+                                height:50
+                                spacing: 10
+                                padding:[dp(0), dp(2),dp(0),dp(0)]
+                                row_force_default: True
+                                row_default_height: 40
+
+                                Label:
+                                    text: 'Total :'
+                                    color:0,0,0,1
+                                    font_size: 30
+
+                                Button:
+                                    id: total_id
+                                    text: '00.00'
+                                    color:0,0,0,1
+                                    background_normal:""
+                                    font_size: 30
+                                    #background_color: rgba('#010c47')
+                                    background_down:'dark.png'
+
+                                Button:
+                                    text: 'Change'
+                                    color : 0,0,0,1
+                                    background_normal:""
+                                    font_size: 35
+                                    background_down:'dark.png'
+                                    on_release:root.gen_amount()
+                                       # Factory.MyPopup().open()
+
+
+
+
+<ChangePopup>:
+    cash_id:cash_id
+    change_id:change_id
+    auto_dismiss: True
+    title:''
+    separator_height: 0
+    background_color:0,0,0,0
+    size_hint:.8,.3
+
+    canvas.before:
+        Color:
+            rgba: 0,0,0,0
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 1,1,1,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        GridLayout:
+            cols:2
+            TextInput:
+                id:cash_id
+                hint_text: 'Enter cash'
+                color: 0,0,0,0
+                font_size:dp(20)
+                halign:'center'
+                valign:"center"
+                multiline:False
+
+
+            Button:
+                text:'gen change'
+                font_size:dp(20)
+                background_normal:""
+                background_color: rgba('#010c47')
+                background_down:'dark.png'
+                on_press: root.cash_amount()
+
+        GridLayout:
+            cols:1
+            paddind:[dp(20),dp(0),dp(20),dp(0)]
+            Label:
+                id:change_id
+                text:'0.00'
+                font_size:dp(40)
+                color:0,0,0,1
+
+
+
+<ScreenOne>:
+
+    password:password
+    username:username
+
+
+
+    BoxLayout:
+        orientation:'vertical'
+        spacing:50
+        padding: [dp(80),dp(50), dp(100), dp(200)]
+        canvas:
+            Rectangle:
+                source: "photo.jpeg"
+                pos: self.pos
+                size: self.size
+
+
+        Label:
+            center_x: (root.width/2)
+            top: dp(root.top/2) + dp(250)
+            text: "Welcome"
+            color: [1,1,1,1]
+            font_size: dp(34)
+
+        AnchorLayout:
+            anchor_x:'center'
+            anchor_y: 'center'
+
+            MDTextFieldRound:
+                id: username
+                icon_left: 'email'
+                icon_type: 'left'
+                require_text_error: 'Field must be not empty!'
+                hint_text: 'Username '
+                size_hint: None, None
+                size: dp(200),dp(35)
+
+
+        AnchorLayout:
+            anchor_x:'center'
+            anchor_y: 'center'
+
+            MDTextFieldRound:
+                id: password
+                icon_type: 'all'
+                icon_left: 'key-variant'
+                icon_right: 'eye-off'
+                require_text_error: 'Field must be not empty!'
+                icon_right_dasabled: False
+                icon_callback: root.show_password
+                password: True
+                hint_text: 'Password`'
+                size_hint: None, None
+                size: dp(200),dp(35)
+
+
+        AnchorLayout:
+            anchor_x:'center'
+            anchor_y: 'bottom'
+            padding:[dp(0),dp(30),dp(0),dp(0)]
+
+            Button:
+                text:"Login"
+                halign: 'left'
+                background_normal:""
+                background_color:0,0,0,0
+                back_color: (1,1,1,0.1)
+                background_down:'dark.png'
+                size_hint: None, None
+                size: dp(150),dp(35)
+                border_radius:[18]
+                on_press:root.user_input()
+                canvas.before:
+                    Color:
+                        rgba:self.back_color
+                    RoundedRectangle:
+                        pos:self.pos
+                        size:self.size
+                        radius:self.border_radius
+
+
+        AnchorLayout:
+            anchor_x:'center'
+            anchor_y: 'bottom'
+
+
+            Button:
+                text:" Create Account" 
+                halign: 'left'
+                background_normal:""
+                background_color:0,0,0,0
+                back_color: (0,0,1,1)
+                background_down:'dark.png'
+                on_press:root.manager.current = 'screen_signup'
+                size_hint: None, None
+                size: dp(150),dp(35)
+                border_radius:[18]
+                canvas.before:
+                    Color:
+                        rgba:self.back_color
+                    RoundedRectangle:
+                        pos:self.pos
+                        size:self.size
+                        radius:self.border_radius
+
+<Signup>:
+    password:password
+    username:username
+    orientation:'vertical'
+    BoxLayout:
+        orientation:'vertical'
+        spacing:50
+        padding: [dp(80),dp(50), dp(100), dp(200)]
+        canvas:
+            Rectangle:
+                source: "photo.jpeg"
+                pos: self.pos
+                size: self.size
+
+
+        Label:
+            center_x: (root.width/2)
+            top: dp(root.top/2) + dp(250)
+            text: "Create Account"
+            color: [1,1,1,1]
+            font_size: dp(34)
+
+        AnchorLayout:
+            anchor_x:'center'
+            anchor_y: 'center'
+
+            MDTextFieldRound:
+                id: username
+                icon_left: 'email'
+                icon_type: 'left'
+                hint_text: 'UserName `'
+                size_hint: None, None
+                size: dp(200),dp(35)
+
+
+        AnchorLayout:
+            anchor_x:'center'
+            anchor_y: 'center'
+
+            MDTextFieldRound:
+                id: password
+                icon_type: 'all'
+                icon_left: 'key-variant'
+                icon_right: 'eye-off'
+                icon_right_dasabled: False
+                icon_callback: root.show_password
+                password: True
+                hint_text: 'Password`'
+                size_hint: None, None
+                size: dp(200),dp(35)
+
+        AnchorLayout:
+            anchor_x:'center'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: None, None
+                size: dp(150),dp(35)
+                pos: dp(350), dp(200)
+                font_size: dp(18)
+                background_color: (1,1,1,0.1)
+                back_color: (0,0,1,1)
+                text: " Login"
+                on_press:root.validate_signup()
+                border_radius:[18]
+                canvas.before:
+                    Color:
+                        rgba:self.back_color
+                    RoundedRectangle:
+                        pos:self.pos
+                        size:self.size
+                        radius:self.border_radius
+
+
+<SelectableButton>:
+    # Draw a background to indicate selection
+    canvas.before:
+        Color:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (1, 1, 1, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    on_press:
+        app.root.ids.rv.on_press(self)
+
+
+<SelectableButton1>:
+    # Draw a background to indicate selection
+    canvas.before:
+        Color:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (1, 1, 1, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    on_press:
+        app.root.ids.viewstock.on_press(self)
+
+
+NavigationLayout:
+    orientation: 'vertical'
+
+    MDNavigationDrawer:
+        id: nav_drawer
+        drawer_logo: 'photo.jpeg'
+        use_logo: 'logo'
+
+        NavigationDrawerToolbar:
+            icon: 'menu'
+            title: "Menu"
+        NavigationDrawerIconButton:
+            icon: 'home'
+            text: "Home"
+            on_release:manager.current='screen2'
+
+        NavigationDrawerIconButton:
+            icon: 'qrcode-scan'
+            text: "Scan Items"
+        NavigationDrawerDivider:
+
+        NavigationDrawerIconButton:
+            icon: 'plus'
+            text: "Add Stock"
+            on_release:manager.current='screen_addstock'
+        NavigationDrawerDivider:
+
+        NavigationDrawerIconButton:
+            icon: 'note-plus'
+            text: "view Stock"
+            on_release:manager.current='screen_viewstock'
+        NavigationDrawerDivider:
+
+        NavigationDrawerIconButton:
+            text: "Report"
+            icon: 'note-text'
+        NavigationDrawerDivider:
+
+        NavigationDrawerIconButton:
+            icon: 'printer'
+            text: "Print Items"
+
+        NavigationDrawerDivider:
+
+        NavigationDrawerIconButton:
+            text: "Reciept"
+            icon: 'receipt'
+        NavigationDrawerDivider:
+
+        NavigationDrawerIconButton:
+            text: "Profile"
+            icon: 'face'
+        NavigationDrawerDivider:
+    ScreenManager:
+        id: manager
+        transition: WipeTransition()
+        ScreenOne:
+            id:logim
+            name:'Screen_login'
+        Signup:
+            id:signup
+            name: 'screen_signup'
+        RV:
+            id:rv
+            name:'screen2'
+
+        AddStock:
+            id:addstock
+            name: 'screen_addstock'
+        ViewStock:
+            id:viewstock
+            name:'screen_viewstock'
+
